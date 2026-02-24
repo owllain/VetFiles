@@ -26,33 +26,79 @@
   --shadow-soft:
     0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-premium:
-    0 20px 25px -5px rgb(0 0 0 / 0.05), 0 8px 10px -6px rgb(0 0 0 / 0.05);
+    0 25px 50px -12px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.05);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  body {
+    @apply antialiased text-slate-900 bg-slate-50;
+  }
+}
+
+@layer components {
+  /* Efecto de carga premium */
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      rgba(241, 245, 249, 1) 25%,
+      rgba(255, 255, 255, 1) 50%,
+      rgba(241, 245, 249, 1) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer-load 2s infinite linear;
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  /* Botón interactivo premium */
+  .btn-premium {
+    @apply relative overflow-hidden transition-all duration-300 active:scale-95;
+  }
+  
+  .btn-premium::after {
+    content: '';
+    @apply absolute inset-0 bg-white opacity-0 transition-opacity duration-300;
+  }
+  
+  .btn-premium:hover::after {
+    @apply opacity-10;
+  }
+}
+
+@keyframes shimmer-load {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
+
 ::-webkit-scrollbar-track {
-  background: var(--color-background-dark);
+  background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
-  background: var(--color-surface-lighter);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #3f3f46;
+  @apply bg-slate-200 rounded-full hover:bg-slate-300 transition-colors;
 }
 
-.glass-effect {
-  background: rgba(18, 18, 18, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+/* Transitions for shadcn-like feels */
+.animate-in {
+  animation: enter 250ms ease-out;
 }
 
-.neon-border-focus:focus-within {
-  box-shadow:
-    0 0 10px #2513ec,
-    inset 0 0 5px rgba(37, 19, 236, 0.2);
-  border-color: #2513ec;
+@keyframes enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }

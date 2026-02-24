@@ -1,0 +1,946 @@
+{
+    "owners": [
+        {
+            "id": 1,
+            "cedula": "5-4737-7937",
+            "full_name": "Pedro Hernandez Reyes",
+            "phone": "26158407",
+            "email": "pedro.hernandez55@gmail.com",
+            "address": "Cartago, Casa #114"
+        },
+        {
+            "id": 2,
+            "cedula": "1-5972-9787",
+            "full_name": "Monica Hernandez Gonzalez",
+            "phone": "78834739",
+            "email": "monica.hernandez32@gmail.com",
+            "address": "Desamparados, Casa #300"
+        },
+        {
+            "id": 3,
+            "cedula": "9-3864-5930",
+            "full_name": "Gabriela Sanchez Gonzalez",
+            "phone": "68884853",
+            "email": "gabriela.sanchez26@gmail.com",
+            "address": "Calle 10, Casa #262"
+        },
+        {
+            "id": 4,
+            "cedula": "9-7404-5215",
+            "full_name": "Roberto Guzman Rojas",
+            "phone": "20126156",
+            "email": "roberto.guzman73@gmail.com",
+            "address": "Desamparados, Casa #162"
+        },
+        {
+            "id": 5,
+            "cedula": "1-5474-2402",
+            "full_name": "Carmen Gonzalez Guzman",
+            "phone": "75631446",
+            "email": "carmen.gonzalez39@gmail.com",
+            "address": "Curridabat, Casa #193"
+        },
+        {
+            "id": 6,
+            "cedula": "4-6783-3877",
+            "full_name": "Gabriela Castro Guzman",
+            "phone": "69819869",
+            "email": "gabriela.castro39@gmail.com",
+            "address": "Cartago, Casa #52"
+        },
+        {
+            "id": 7,
+            "cedula": "6-1216-3777",
+            "full_name": "Fernando Villalobos Lopez",
+            "phone": "78987025",
+            "email": "fernando.villalobos17@gmail.com",
+            "address": "Alajuela Centro, Casa #474"
+        },
+        {
+            "id": 8,
+            "cedula": "7-8140-3855",
+            "full_name": "Carlos Ramirez Perez",
+            "phone": "84587878",
+            "email": "carlos.ramirez68@gmail.com",
+            "address": "Barrio Escalante, Casa #125"
+        },
+        {
+            "id": 9,
+            "cedula": "1-4093-9977",
+            "full_name": "Fernando Hernandez Jimenez",
+            "phone": "29509574",
+            "email": "fernando.hernandez45@gmail.com",
+            "address": "Cartago, Casa #45"
+        },
+        {
+            "id": 10,
+            "cedula": "7-5487-5215",
+            "full_name": "Lucia Vargas Hernandez",
+            "phone": "27317922",
+            "email": "lucia.vargas59@gmail.com",
+            "address": "Escazu, Casa #178"
+        },
+        {
+            "id": 11,
+            "cedula": "9-9719-9841",
+            "full_name": "Carmen Castillo Sanchez",
+            "phone": "78145740",
+            "email": "carmen.castillo60@gmail.com",
+            "address": "Avenida Central, Casa #321"
+        },
+        {
+            "id": 12,
+            "cedula": "9-7220-2946",
+            "full_name": "Pedro Salazar Gonzalez",
+            "phone": "62289450",
+            "email": "pedro.salazar65@gmail.com",
+            "address": "Escazu, Casa #2"
+        },
+        {
+            "id": 13,
+            "cedula": "9-4032-5473",
+            "full_name": "Diego Perez Jimenez",
+            "phone": "61876390",
+            "email": "diego.perez71@gmail.com",
+            "address": "Heredia, Casa #128"
+        },
+        {
+            "id": 14,
+            "cedula": "7-3369-8216",
+            "full_name": "Roberto Flores Villalobos",
+            "phone": "20813199",
+            "email": "roberto.flores49@gmail.com",
+            "address": "Curridabat, Casa #87"
+        },
+        {
+            "id": 15,
+            "cedula": "8-8364-8054",
+            "full_name": "Monica Rodriguez Hernandez",
+            "phone": "74915497",
+            "email": "monica.rodriguez23@gmail.com",
+            "address": "Escazu, Casa #272"
+        },
+        {
+            "id": 16,
+            "cedula": "5-3008-5693",
+            "full_name": "Ana Ramirez Rojas",
+            "phone": "70636344",
+            "email": "ana.ramirez50@gmail.com",
+            "address": "San Pedro, Casa #144"
+        },
+        {
+            "id": 17,
+            "cedula": "9-3332-6550",
+            "full_name": "Elena Guzman Lopez",
+            "phone": "66712575",
+            "email": "elena.guzman79@gmail.com",
+            "address": "San Pedro, Casa #467"
+        },
+        {
+            "id": 18,
+            "cedula": "7-8669-3850",
+            "full_name": "Roberto Lopez Guzman",
+            "phone": "20896876",
+            "email": "roberto.lopez47@gmail.com",
+            "address": "Alajuela Centro, Casa #481"
+        },
+        {
+            "id": 19,
+            "cedula": "7-2966-7602",
+            "full_name": "Roberto Torres Gonzalez",
+            "phone": "69685375",
+            "email": "roberto.torres21@gmail.com",
+            "address": "Curridabat, Casa #486"
+        },
+        {
+            "id": 20,
+            "cedula": "5-7495-2301",
+            "full_name": "Fernando Villalobos Reyes",
+            "phone": "81978897",
+            "email": "fernando.villalobos87@gmail.com",
+            "address": "Avenida Central, Casa #133"
+        },
+        {
+            "id": 21,
+            "cedula": "5-7556-9071",
+            "full_name": "Roberto Rojas Salazar",
+            "phone": "66801762",
+            "email": "roberto.rojas68@gmail.com",
+            "address": "Alajuela Centro, Casa #351"
+        },
+        {
+            "id": 22,
+            "cedula": "3-8721-7843",
+            "full_name": "Carmen Jimenez Rodriguez",
+            "phone": "82216293",
+            "email": "carmen.jimenez91@gmail.com",
+            "address": "Desamparados, Casa #112"
+        },
+        {
+            "id": 23,
+            "cedula": "4-1566-3541",
+            "full_name": "Juan Rodriguez Jimenez",
+            "phone": "80819131",
+            "email": "juan.rodriguez76@gmail.com",
+            "address": "Barrio Escalante, Casa #172"
+        },
+        {
+            "id": 24,
+            "cedula": "1-9566-1367",
+            "full_name": "Jorge Guzman Villalobos",
+            "phone": "21397428",
+            "email": "jorge.guzman63@gmail.com",
+            "address": "San Pedro, Casa #368"
+        },
+        {
+            "id": 25,
+            "cedula": "3-9111-8358",
+            "full_name": "Laura Perez Lopez",
+            "phone": "75545624",
+            "email": "laura.perez81@gmail.com",
+            "address": "Barrio Escalante, Casa #306"
+        },
+        {
+            "id": 26,
+            "cedula": "2-4498-5367",
+            "full_name": "Maria Torres Torres",
+            "phone": "22527050",
+            "email": "maria.torres41@gmail.com",
+            "address": "Escazu, Casa #127"
+        },
+        {
+            "id": 27,
+            "cedula": "7-3949-5541",
+            "full_name": "Monica Jimenez Reyes",
+            "phone": "80317913",
+            "email": "monica.jimenez78@gmail.com",
+            "address": "Avenida Central, Casa #316"
+        },
+        {
+            "id": 28,
+            "cedula": "5-5926-8908",
+            "full_name": "Andres Martinez Castro",
+            "phone": "85367373",
+            "email": "andres.martinez34@gmail.com",
+            "address": "Barrio Escalante, Casa #43"
+        },
+        {
+            "id": 29,
+            "cedula": "5-1729-6555",
+            "full_name": "Diego Morales Reyes",
+            "phone": "23846057",
+            "email": "diego.morales2@gmail.com",
+            "address": "Cartago, Casa #118"
+        },
+        {
+            "id": 30,
+            "cedula": "2-6257-5893",
+            "full_name": "Pedro Flores Ramirez",
+            "phone": "89901658",
+            "email": "pedro.flores34@gmail.com",
+            "address": "Alajuela Centro, Casa #381"
+        },
+        {
+            "id": 31,
+            "cedula": "9-4838-5777",
+            "full_name": "Isabel Jimenez Hernandez",
+            "phone": "89264805",
+            "email": "isabel.jimenez8@gmail.com",
+            "address": "San Pedro, Casa #288"
+        },
+        {
+            "id": 32,
+            "cedula": "9-3179-9626",
+            "full_name": "Elena Lopez Morales",
+            "phone": "79659970",
+            "email": "elena.lopez97@gmail.com",
+            "address": "Calle 10, Casa #128"
+        },
+        {
+            "id": 33,
+            "cedula": "1-4497-1651",
+            "full_name": "Sofia Ramirez Rojas",
+            "phone": "87512252",
+            "email": "sofia.ramirez28@gmail.com",
+            "address": "Alajuela Centro, Casa #104"
+        },
+        {
+            "id": 34,
+            "cedula": "7-9806-3250",
+            "full_name": "Ana Sanchez Ramirez",
+            "phone": "23198676",
+            "email": "ana.sanchez89@gmail.com",
+            "address": "Desamparados, Casa #320"
+        },
+        {
+            "id": 35,
+            "cedula": "9-9092-8652",
+            "full_name": "Gabriela Flores Morales",
+            "phone": "22182327",
+            "email": "gabriela.flores89@gmail.com",
+            "address": "Alajuela Centro, Casa #22"
+        },
+        {
+            "id": 36,
+            "cedula": "4-7293-8153",
+            "full_name": "Maria Morales Rodriguez",
+            "phone": "69223088",
+            "email": "maria.morales32@gmail.com",
+            "address": "Calle 10, Casa #474"
+        },
+        {
+            "id": 37,
+            "cedula": "7-2750-5654",
+            "full_name": "Monica Rodriguez Martinez",
+            "phone": "77113096",
+            "email": "monica.rodriguez20@gmail.com",
+            "address": "Heredia, Casa #486"
+        },
+        {
+            "id": 38,
+            "cedula": "4-6039-2187",
+            "full_name": "Elena Torres Salazar",
+            "phone": "29485345",
+            "email": "elena.torres10@gmail.com",
+            "address": "Cartago, Casa #262"
+        },
+        {
+            "id": 39,
+            "cedula": "1-1994-8604",
+            "full_name": "Roberto Villalobos Martinez",
+            "phone": "65429007",
+            "email": "roberto.villalobos58@gmail.com",
+            "address": "Curridabat, Casa #50"
+        },
+        {
+            "id": 40,
+            "cedula": "7-9793-8507",
+            "full_name": "Carlos Salazar Reyes",
+            "phone": "76478846",
+            "email": "carlos.salazar59@gmail.com",
+            "address": "San Pedro, Casa #1"
+        },
+        {
+            "id": 41,
+            "cedula": "9-3094-9858",
+            "full_name": "Ricardo Castillo Salazar",
+            "phone": "29266757",
+            "email": "ricardo.castillo9@gmail.com",
+            "address": "Alajuela Centro, Casa #185"
+        },
+        {
+            "id": 42,
+            "cedula": "9-6973-2654",
+            "full_name": "Sofia Perez Sanchez",
+            "phone": "82872942",
+            "email": "sofia.perez20@gmail.com",
+            "address": "Cartago, Casa #483"
+        },
+        {
+            "id": 43,
+            "cedula": "2-3367-2635",
+            "full_name": "Roberto Martinez Gonzalez",
+            "phone": "87949118",
+            "email": "roberto.martinez61@gmail.com",
+            "address": "Alajuela Centro, Casa #464"
+        },
+        {
+            "id": 44,
+            "cedula": "4-8938-4733",
+            "full_name": "Elena Flores Castro",
+            "phone": "65575537",
+            "email": "elena.flores39@gmail.com",
+            "address": "Avenida Central, Casa #239"
+        },
+        {
+            "id": 45,
+            "cedula": "2-1167-8208",
+            "full_name": "Ana Guzman Flores",
+            "phone": "73473503",
+            "email": "ana.guzman14@gmail.com",
+            "address": "Curridabat, Casa #315"
+        },
+        {
+            "id": 46,
+            "cedula": "5-8078-2811",
+            "full_name": "Ricardo Sanchez Jimenez",
+            "phone": "82103803",
+            "email": "ricardo.sanchez24@gmail.com",
+            "address": "Alajuela Centro, Casa #14"
+        },
+        {
+            "id": 47,
+            "cedula": "8-4488-2226",
+            "full_name": "Jorge Flores Lopez",
+            "phone": "61363939",
+            "email": "jorge.flores47@gmail.com",
+            "address": "Calle 10, Casa #328"
+        },
+        {
+            "id": 48,
+            "cedula": "5-4595-9156",
+            "full_name": "Juan Morales Morales",
+            "phone": "60938262",
+            "email": "juan.morales19@gmail.com",
+            "address": "Curridabat, Casa #91"
+        },
+        {
+            "id": 49,
+            "cedula": "5-7180-3398",
+            "full_name": "Jorge Torres Reyes",
+            "phone": "25385006",
+            "email": "jorge.torres54@gmail.com",
+            "address": "Barrio Escalante, Casa #37"
+        },
+        {
+            "id": 50,
+            "cedula": "2-7681-8171",
+            "full_name": "Carlos Salazar Perez",
+            "phone": "28562953",
+            "email": "carlos.salazar83@gmail.com",
+            "address": "Barrio Escalante, Casa #58"
+        }
+    ],
+    "patients": [
+        {
+            "id": 1,
+            "owner_id": 50,
+            "name": "Milo",
+            "species": "Hamster",
+            "breed": "N/A",
+            "age_months": 116,
+            "weight_kg": 17.43
+        },
+        {
+            "id": 2,
+            "owner_id": 16,
+            "name": "Rambo",
+            "species": "Conejo",
+            "breed": "N/A",
+            "age_months": 53,
+            "weight_kg": 1.89
+        },
+        {
+            "id": 3,
+            "owner_id": 35,
+            "name": "Daisy",
+            "species": "Gato",
+            "breed": "Maine Coon",
+            "age_months": 56,
+            "weight_kg": 34.99
+        },
+        {
+            "id": 4,
+            "owner_id": 33,
+            "name": "Daisy",
+            "species": "Hamster",
+            "breed": "N/A",
+            "age_months": 31,
+            "weight_kg": 1.29
+        },
+        {
+            "id": 5,
+            "owner_id": 44,
+            "name": "Rambo",
+            "species": "Ave",
+            "breed": "N/A",
+            "age_months": 37,
+            "weight_kg": 25.92
+        },
+        {
+            "id": 6,
+            "owner_id": 32,
+            "name": "Kiwi",
+            "species": "Ave",
+            "breed": "N/A",
+            "age_months": 36,
+            "weight_kg": 14.83
+        },
+        {
+            "id": 7,
+            "owner_id": 25,
+            "name": "Lola",
+            "species": "Hamster",
+            "breed": "N/A",
+            "age_months": 68,
+            "weight_kg": 14.58
+        },
+        {
+            "id": 8,
+            "owner_id": 36,
+            "name": "Max",
+            "species": "Gato",
+            "breed": "Bengala",
+            "age_months": 112,
+            "weight_kg": 14.7
+        },
+        {
+            "id": 9,
+            "owner_id": 22,
+            "name": "Chiqui",
+            "species": "Gato",
+            "breed": "Sphynx",
+            "age_months": 1,
+            "weight_kg": 30.3
+        },
+        {
+            "id": 10,
+            "owner_id": 20,
+            "name": "Rocky",
+            "species": "Conejo",
+            "breed": "N/A",
+            "age_months": 50,
+            "weight_kg": 5.16
+        },
+        {
+            "id": 11,
+            "owner_id": 12,
+            "name": "Milo",
+            "species": "Hamster",
+            "breed": "N/A",
+            "age_months": 75,
+            "weight_kg": 24.84
+        },
+        {
+            "id": 12,
+            "owner_id": 37,
+            "name": "Max",
+            "species": "Gato",
+            "breed": "Persa",
+            "age_months": 31,
+            "weight_kg": 19.45
+        },
+        {
+            "id": 13,
+            "owner_id": 19,
+            "name": "Kiwi",
+            "species": "Ave",
+            "breed": "N/A",
+            "age_months": 18,
+            "weight_kg": 11.43
+        },
+        {
+            "id": 14,
+            "owner_id": 49,
+            "name": "Simba",
+            "species": "Perro",
+            "breed": "Boxer",
+            "age_months": 81,
+            "weight_kg": 24.2
+        },
+        {
+            "id": 15,
+            "owner_id": 45,
+            "name": "Simba",
+            "species": "Ave",
+            "breed": "N/A",
+            "age_months": 56,
+            "weight_kg": 26.06
+        },
+        {
+            "id": 16,
+            "owner_id": 24,
+            "name": "Rambo",
+            "species": "Perro",
+            "breed": "Boxer",
+            "age_months": 94,
+            "weight_kg": 20.21
+        },
+        {
+            "id": 17,
+            "owner_id": 44,
+            "name": "Daisy",
+            "species": "Conejo",
+            "breed": "N/A",
+            "age_months": 62,
+            "weight_kg": 39.84
+        },
+        {
+            "id": 18,
+            "owner_id": 10,
+            "name": "Nala",
+            "species": "Perro",
+            "breed": "Bulldog",
+            "age_months": 76,
+            "weight_kg": 4.88
+        },
+        {
+            "id": 19,
+            "owner_id": 7,
+            "name": "Max",
+            "species": "Ave",
+            "breed": "N/A",
+            "age_months": 100,
+            "weight_kg": 12.71
+        },
+        {
+            "id": 20,
+            "owner_id": 27,
+            "name": "Chiqui",
+            "species": "Hamster",
+            "breed": "N/A",
+            "age_months": 82,
+            "weight_kg": 20.87
+        },
+        {
+            "id": 21,
+            "owner_id": 23,
+            "name": "Milo",
+            "species": "Perro",
+            "breed": "Bulldog",
+            "age_months": 90,
+            "weight_kg": 15.77
+        },
+        {
+            "id": 22,
+            "owner_id": 26,
+            "name": "Lola",
+            "species": "Perro",
+            "breed": "Poodle",
+            "age_months": 32,
+            "weight_kg": 12.89
+        },
+        {
+            "id": 23,
+            "owner_id": 4,
+            "name": "Coco",
+            "species": "Perro",
+            "breed": "Labrador",
+            "age_months": 87,
+            "weight_kg": 34.17
+        },
+        {
+            "id": 24,
+            "owner_id": 42,
+            "name": "Nala",
+            "species": "Conejo",
+            "breed": "N/A",
+            "age_months": 66,
+            "weight_kg": 35.99
+        },
+        {
+            "id": 25,
+            "owner_id": 13,
+            "name": "Milo",
+            "species": "Conejo",
+            "breed": "N/A",
+            "age_months": 49,
+            "weight_kg": 33.43
+        },
+        {
+            "id": 26,
+            "owner_id": 6,
+            "name": "Simba",
+            "species": "Gato",
+            "breed": "Siames",
+            "age_months": 82,
+            "weight_kg": 5.17
+        },
+        {
+            "id": 27,
+            "owner_id": 39,
+            "name": "Simba",
+            "species": "Ave",
+            "breed": "N/A",
+            "age_months": 26,
+            "weight_kg": 25.37
+        },
+        {
+            "id": 28,
+            "owner_id": 50,
+            "name": "Rocky",
+            "species": "Gato",
+            "breed": "Comun",
+            "age_months": 87,
+            "weight_kg": 28.64
+        },
+        {
+            "id": 29,
+            "owner_id": 42,
+            "name": "Rambo",
+            "species": "Perro",
+            "breed": "Poodle",
+            "age_months": 66,
+            "weight_kg": 1.72
+        },
+        {
+            "id": 30,
+            "owner_id": 11,
+            "name": "Luna",
+            "species": "Ave",
+            "breed": "N/A",
+            "age_months": 118,
+            "weight_kg": 25.48
+        },
+        {
+            "id": 31,
+            "owner_id": 11,
+            "name": "Milo",
+            "species": "Hamster",
+            "breed": "N/A",
+            "age_months": 101,
+            "weight_kg": 6.33
+        },
+        {
+            "id": 32,
+            "owner_id": 17,
+            "name": "Luna",
+            "species": "Perro",
+            "breed": "Boxer",
+            "age_months": 72,
+            "weight_kg": 33.63
+        },
+        {
+            "id": 33,
+            "owner_id": 24,
+            "name": "Chiqui",
+            "species": "Ave",
+            "breed": "N/A",
+            "age_months": 102,
+            "weight_kg": 17.37
+        },
+        {
+            "id": 34,
+            "owner_id": 45,
+            "name": "Rambo",
+            "species": "Conejo",
+            "breed": "N/A",
+            "age_months": 108,
+            "weight_kg": 10.92
+        },
+        {
+            "id": 35,
+            "owner_id": 4,
+            "name": "Toby",
+            "species": "Perro",
+            "breed": "Boxer",
+            "age_months": 5,
+            "weight_kg": 8.57
+        },
+        {
+            "id": 36,
+            "owner_id": 38,
+            "name": "Bento",
+            "species": "Ave",
+            "breed": "N/A",
+            "age_months": 43,
+            "weight_kg": 37.27
+        },
+        {
+            "id": 37,
+            "owner_id": 17,
+            "name": "Toby",
+            "species": "Conejo",
+            "breed": "N/A",
+            "age_months": 30,
+            "weight_kg": 35.32
+        },
+        {
+            "id": 38,
+            "owner_id": 31,
+            "name": "Coco",
+            "species": "Perro",
+            "breed": "Labrador",
+            "age_months": 106,
+            "weight_kg": 1.68
+        },
+        {
+            "id": 39,
+            "owner_id": 5,
+            "name": "Milo",
+            "species": "Hamster",
+            "breed": "N/A",
+            "age_months": 79,
+            "weight_kg": 13.93
+        },
+        {
+            "id": 40,
+            "owner_id": 1,
+            "name": "Kiwi",
+            "species": "Conejo",
+            "breed": "N/A",
+            "age_months": 114,
+            "weight_kg": 30.95
+        },
+        {
+            "id": 41,
+            "owner_id": 4,
+            "name": "Bento",
+            "species": "Ave",
+            "breed": "N/A",
+            "age_months": 78,
+            "weight_kg": 28.67
+        },
+        {
+            "id": 42,
+            "owner_id": 12,
+            "name": "Lola",
+            "species": "Ave",
+            "breed": "N/A",
+            "age_months": 28,
+            "weight_kg": 4.08
+        },
+        {
+            "id": 43,
+            "owner_id": 32,
+            "name": "Bento",
+            "species": "Hamster",
+            "breed": "N/A",
+            "age_months": 61,
+            "weight_kg": 36.4
+        },
+        {
+            "id": 44,
+            "owner_id": 12,
+            "name": "Chiqui",
+            "species": "Hamster",
+            "breed": "N/A",
+            "age_months": 56,
+            "weight_kg": 21.95
+        },
+        {
+            "id": 45,
+            "owner_id": 8,
+            "name": "Coco",
+            "species": "Perro",
+            "breed": "Labrador",
+            "age_months": 10,
+            "weight_kg": 13.55
+        },
+        {
+            "id": 46,
+            "owner_id": 24,
+            "name": "Toby",
+            "species": "Perro",
+            "breed": "Pastor Aleman",
+            "age_months": 99,
+            "weight_kg": 4.62
+        },
+        {
+            "id": 47,
+            "owner_id": 26,
+            "name": "Max",
+            "species": "Conejo",
+            "breed": "N/A",
+            "age_months": 70,
+            "weight_kg": 34.96
+        },
+        {
+            "id": 48,
+            "owner_id": 23,
+            "name": "Rocky",
+            "species": "Gato",
+            "breed": "Bengala",
+            "age_months": 25,
+            "weight_kg": 27.29
+        },
+        {
+            "id": 49,
+            "owner_id": 31,
+            "name": "Bento",
+            "species": "Ave",
+            "breed": "N/A",
+            "age_months": 65,
+            "weight_kg": 32.33
+        },
+        {
+            "id": 50,
+            "owner_id": 29,
+            "name": "Luna",
+            "species": "Perro",
+            "breed": "Poodle",
+            "age_months": 94,
+            "weight_kg": 6.21
+        },
+        {
+            "id": 51,
+            "owner_id": 27,
+            "name": "Simba",
+            "species": "Hamster",
+            "breed": "N/A",
+            "age_months": 43,
+            "weight_kg": 38.88
+        },
+        {
+            "id": 52,
+            "owner_id": 45,
+            "name": "Rambo",
+            "species": "Hamster",
+            "breed": "N/A",
+            "age_months": 62,
+            "weight_kg": 7.95
+        },
+        {
+            "id": 53,
+            "owner_id": 8,
+            "name": "Lola",
+            "species": "Conejo",
+            "breed": "N/A",
+            "age_months": 93,
+            "weight_kg": 25.52
+        },
+        {
+            "id": 54,
+            "owner_id": 29,
+            "name": "Coco",
+            "species": "Hamster",
+            "breed": "N/A",
+            "age_months": 86,
+            "weight_kg": 22.71
+        },
+        {
+            "id": 55,
+            "owner_id": 6,
+            "name": "Nala",
+            "species": "Hamster",
+            "breed": "N/A",
+            "age_months": 78,
+            "weight_kg": 28.17
+        },
+        {
+            "id": 56,
+            "owner_id": 16,
+            "name": "Daisy",
+            "species": "Hamster",
+            "breed": "N/A",
+            "age_months": 109,
+            "weight_kg": 18.85
+        },
+        {
+            "id": 57,
+            "owner_id": 22,
+            "name": "Bento",
+            "species": "Gato",
+            "breed": "Maine Coon",
+            "age_months": 65,
+            "weight_kg": 13.54
+        },
+        {
+            "id": 58,
+            "owner_id": 35,
+            "name": "Luna",
+            "species": "Perro",
+            "breed": "Chihuahua",
+            "age_months": 13,
+            "weight_kg": 21.43
+        },
+        {
+            "id": 59,
+            "owner_id": 45,
+            "name": "Rambo",
+            "species": "Gato",
+            "breed": "Bengala",
+            "age_months": 99,
+            "weight_kg": 13.94
+        },
+        {
+            "id": 60,
+            "owner_id": 23,
+            "name": "Rocky",
+            "species": "Conejo",
+            "breed": "N/A",
+            "age_months": 20,
+            "weight_kg": 4.59
+        }
+    ]
+}
