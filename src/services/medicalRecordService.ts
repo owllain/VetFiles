@@ -57,5 +57,16 @@ export const medicalRecordService = {
       sql: "DELETE FROM medical_records WHERE id = ?",
       args: [id],
     });
+  },
+
+  async update(id: number, record: Partial<MedicalRecord>) {
+    const fields = Object.keys(record).filter(k => !['id', 'patient_name', 'doctor_name'].includes(k));
+    if (fields.length === 0) return;
+    const setClause = fields.map(f => `${f} = ?`).join(', ');
+    const args = fields.map(f => (record as any)[f]);
+    await turso.execute({
+      sql: `UPDATE medical_records SET ${setClause} WHERE id = ?`,
+      args: [...args, id],
+    });
   }
 };

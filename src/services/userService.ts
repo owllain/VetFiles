@@ -9,6 +9,7 @@ export interface User {
   role: string;
   password_hash: string;
   created_at: number;
+  schedule?: string;
 }
 
 export const userService = {
@@ -23,6 +24,7 @@ export const userService = {
       role: row.role as string,
       password_hash: row.password_hash as string,
       created_at: row.created_at as number,
+      schedule: row.schedule as string || 'Sin horario asignado',
     }));
   },
 

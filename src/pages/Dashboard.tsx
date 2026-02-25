@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useNavigate } from 'react-router-dom';
 import { Appointment } from '../services/appointmentService';
 import { hospitalizationService, Hospitalization } from '../services/hospitalizationService';
 import { Calendar, Activity, Clock, AlertCircle, TriangleAlert, Bell, ChevronRight, Syringe, Pill, Thermometer, TrendingUp } from 'lucide-react';
@@ -9,6 +10,7 @@ interface DashboardProps {
 }
 
 export default function Dashboard({ appointments }: DashboardProps) {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [hospitalizations, setHospitalizations] = useState<Hospitalization[]>([]);
   const [now] = useState(new Date());
@@ -197,7 +199,10 @@ export default function Dashboard({ appointments }: DashboardProps) {
                       ))}
                    </div>
                    
-                   <button className="w-full mt-10 py-5 bg-slate-900 hover:bg-primary text-white font-black rounded-3xl transition-all shadow-xl shadow-slate-200 uppercase text-xs tracking-[0.2em] flex items-center justify-center gap-3 active:scale-[0.98]">
+                   <button 
+                     onClick={() => navigate('/hospitalization')}
+                     className="w-full mt-10 py-5 bg-slate-900 hover:bg-primary text-white font-black rounded-3xl transition-all shadow-xl shadow-slate-200 uppercase text-xs tracking-[0.2em] flex items-center justify-center gap-3 active:scale-[0.98]"
+                   >
                       Ver Todos los Internamientos <ChevronRight className="size-4" />
                    </button>
                 </div>

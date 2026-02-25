@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { userService, User } from '../services/userService';
+import { X } from 'lucide-react';
 
 const ROLES = [
   { id: 'Doctor', label: 'Doctor', icon: 'stethoscope' },
@@ -20,7 +21,8 @@ export default function Users() {
     email: '',
     phone: '',
     role: 'Doctor',
-    password: ''
+    password: '',
+    schedule: ''
   });
 
   useEffect(() => {
@@ -48,7 +50,8 @@ export default function Users() {
           full_name: formData.full_name,
           email: formData.email,
           phone: formData.phone,
-          role: formData.role
+          role: formData.role,
+          schedule: formData.schedule
         });
       } else {
         await userService.create({
@@ -57,13 +60,14 @@ export default function Users() {
           email: formData.email,
           phone: formData.phone,
           role: formData.role,
+          schedule: formData.schedule,
           password_hash: formData.password, // Basic mock hash
           created_at: Date.now()
         });
       }
       setIsModalOpen(false);
       setEditingUser(null);
-      setFormData({ cedula: '', full_name: '', email: '', phone: '', role: 'Doctor', password: '' });
+      setFormData({ cedula: '', full_name: '', email: '', phone: '', role: 'Doctor', password: '', schedule: '' });
       loadUsers();
     } catch (error) {
       alert("Error al procesar el usuario");
@@ -79,7 +83,8 @@ export default function Users() {
       email: user.email,
       phone: user.phone,
       role: user.role,
-      password: ''
+      password: '',
+      schedule: user.schedule || ''
     });
     setIsModalOpen(true);
   };
@@ -99,7 +104,7 @@ export default function Users() {
           <p className="text-slate-500 font-medium">Control de acceso y roles del sistema.</p>
         </div>
         <button 
-          onClick={() => { setEditingUser(null); setFormData({ cedula: '', full_name: '', email: '', phone: '', role: 'Doctor', password: '' }); setIsModalOpen(true); }}
+          onClick={() => { setEditingUser(null); setFormData({ cedula: '', full_name: '', email: '', phone: '', role: 'Doctor', password: '', schedule: '' }); setIsModalOpen(true); }}
           className="bg-primary hover:bg-primary-hover text-white font-black py-4 px-8 rounded-2xl transition-all flex items-center gap-3 shadow-xl shadow-primary/20 self-start group"
         >
           <span className="material-symbols-outlined group-hover:rotate-90 transition-transform">person_add</span>
@@ -149,6 +154,10 @@ export default function Users() {
                 <span className="material-symbols-outlined text-lg">call</span>
                 <span className="text-sm font-bold">{user.phone}</span>
               </div>
+              <div className="flex items-center gap-3 text-slate-500 pt-1">
+                <span className="material-symbols-outlined text-lg">schedule</span>
+                <span className="text-xs font-black uppercase text-primary/70">{user.schedule || 'Sin horario'}</span>
+              </div>
             </div>
           </motion.div>
         ))}
@@ -160,9 +169,16 @@ export default function Users() {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsModalOpen(false)} className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" />
             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="relative w-full max-w-2xl bg-white rounded-[2.5rem] p-10 shadow-premium overflow-hidden">
               <form onSubmit={handleSave} className="space-y-8">
-                <div>
+                <div className="relative mb-4">
                   <h2 className="text-3xl font-black text-slate-900 tracking-tight">{editingUser ? 'Editar Usuario' : 'Nuevo Usuario'}</h2>
                   <p className="text-slate-500 font-medium tracking-tight">Configura el acceso y perfil del personal.</p>
+                  <button 
+                    type="button" 
+                    onClick={() => setIsModalOpen(false)} 
+                    className="absolute -top-2 -right-2 size-8 rounded-full bg-slate-50 text-slate-300 hover:text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-all shadow-sm"
+                  >
+                    <X className="size-4" />
+                  </button>
                 </div>
 
                 <div className="space-y-4">
@@ -218,6 +234,11 @@ export default function Users() {
                       </button>
                     ))}
                   </div>
+                </div>
+
+                <div className="space-y-1 text-left">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Horario Laboral</label>
+                    <input className="input-medical" placeholder="P. ej. Lunes a Viernes: 8am - 5pm / Sábados: 9am - 1pm" value={formData.schedule} onChange={e => setFormData({...formData, schedule: e.target.value})} />
                 </div>
 
                 <div className="flex gap-4 pt-4">

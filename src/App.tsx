@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { Menu, X, PawPrint } from "lucide-react";
+import { Toaster, toast } from 'sonner';
 import Sidebar from "./components/Sidebar";
 import Dashboard from "./pages/Dashboard";
 import Patients from "./pages/Patients";
@@ -22,7 +23,9 @@ import Login from "./pages/Login";
 import Recovery from "./pages/Recovery";
 import ResetPassword from "./pages/ResetPassword";
 import Hospitalization from "./pages/Hospitalization";
+import ScheduleConfig from "./pages/ScheduleConfig";
 import { appointmentService, Appointment } from "./services/appointmentService";
+import { hospitalizationService, Hospitalization as HospitalizationType } from "./services/hospitalizationService";
 
 // Wrapper para transiciones de página suaves
 const PageWrapper = ({ children }: { children: React.ReactNode }) => {
@@ -55,6 +58,7 @@ const AnimatedRoutes = ({ appointments, loadAppointments }: any) => {
         <Route path="/users" element={<PageWrapper><Users /></PageWrapper>} />
         <Route path="/records" element={<PageWrapper><MedicalRecords /></PageWrapper>} />
         <Route path="/settings" element={<PageWrapper><Settings /></PageWrapper>} />
+        <Route path="/schedule-config" element={<PageWrapper><ScheduleConfig /></PageWrapper>} />
         <Route path="/login" element={<Navigate to="/" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
@@ -68,13 +72,41 @@ function App() {
   });
 
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [hospitalizations, setHospitalizations] = useState<HospitalizationType[]>([]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
       loadAppointments();
+      loadHospitalizations();
     }
   }, [isAuthenticated]);
+
+  // Monitor Global de Alertas Médicas (Se activa en toda la app)
+  useEffect(() => {
+    if (!isAuthenticated || hospitalizations.length === 0) return;
+
+    const interval = setInterval(() => {
+      const ahora = new Date().toLocaleTimeString('es-CR', { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        hour12: false 
+      });
+      
+      hospitalizations.forEach(h => {
+        // Solo alertar si el paciente no está de alta y coincide la hora
+        if (h.alert_time === ahora && h.status !== 'Alta') {
+          toast.info(`Recordatorio de revisión: ${h.patient_name}`, {
+            description: h.alert_message || 'Tarea programada para este momento.',
+            icon: '🩺',
+            duration: 10000 // 10 segundos para que no se pierda
+          });
+        }
+      });
+    }, 60000); // Revisa cada minuto
+
+    return () => clearInterval(interval);
+  }, [isAuthenticated, hospitalizations]);
 
   const loadAppointments = async () => {
     try {
@@ -82,6 +114,15 @@ function App() {
       setAppointments(data);
     } catch (error) {
       console.error("Error loading shared appointments:", error);
+    }
+  };
+
+  const loadHospitalizations = async () => {
+    try {
+      const data = await hospitalizationService.getAll();
+      setHospitalizations(data);
+    } catch (error) {
+      console.error("Error loading global hospitalizations:", error);
     }
   };
 
@@ -116,6 +157,7 @@ function App() {
 
   return (
     <Router>
+      <Toaster richColors position="top-right" />
       <div className="flex h-screen bg-slate-50 overflow-hidden text-slate-900 font-sans antialiased relative">
         
         {/* Mobile Header */}

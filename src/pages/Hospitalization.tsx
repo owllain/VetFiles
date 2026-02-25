@@ -1,13 +1,54 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { toast } from 'sonner';
 import { hospitalizationService, Hospitalization } from '../services/hospitalizationService';
-import { Activity, Thermometer, Heart, TriangleAlert, CircleCheck, EllipsisVertical, Plus, Clock } from 'lucide-react';
+import { patientService, Patient } from '../services/patientService';
+import { userService, User } from '../services/userService';
+import { 
+  Activity, 
+  Thermometer, 
+  Heart, 
+  TriangleAlert, 
+  CircleCheck, 
+  EllipsisVertical, 
+  Plus, 
+  Clock, 
+  X, 
+  Edit2, 
+  Trash2, 
+  User as UserIcon,
+  Stethoscope,
+  ClipboardList,
+  ChevronRight,
+  Search
+} from 'lucide-react';
 
 export default function HospitalizationPage() {
   const [data, setData] = useState<Hospitalization[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
   const [now, setNow] = useState(new Date());
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [doctors, setDoctors] = useState<User[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingHospitalization, setEditingHospitalization] = useState<Hospitalization | null>(null);
+  const [activeMenuId, setActiveMenuId] = useState<number | null>(null);
+  const [formData, setFormData] = useState({
+    patient_id: 0,
+    doctor_id: 0,
+    reason: '',
+    diagnosis_preliminary: '',
+    alert_message: '',
+    alert_time: '',
+    status: 'Observación' as Hospitalization['status'],
+    treatment_plan: '',
+    notes: '',
+    weight_entry: 0
+  });
+  const [isDoctorDropdownOpen, setIsDoctorDropdownOpen] = useState(false);
+  const [patientSearch, setPatientSearch] = useState('');
+  const [showPatientResults, setShowPatientResults] = useState(false);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
 
   useEffect(() => {
     loadData();
@@ -15,15 +56,93 @@ export default function HospitalizationPage() {
     return () => clearInterval(timer);
   }, []);
 
+
+
   const loadData = async () => {
     try {
       setLoading(true);
-      const res = await hospitalizationService.getAll();
-      setData(res);
+      const [hData, pData, uData] = await Promise.all([
+        hospitalizationService.getAll(),
+        patientService.getAll(),
+        userService.getAll()
+      ]);
+      setData(hData);
+      setPatients(pData);
+      setDoctors(uData.filter(u => u.role === 'Doctor'));
     } catch (error) {
       console.error(error);
     } finally {
       setTimeout(() => setLoading(false), 400);
+    }
+  };
+
+  const handleOpenAddModal = () => {
+    setEditingHospitalization(null);
+    setSelectedPatient(null);
+    setPatientSearch('');
+    setFormData({
+      patient_id: 0,
+      doctor_id: doctors[0]?.id || 0,
+      reason: '',
+      diagnosis_preliminary: '',
+      alert_message: '',
+      alert_time: '',
+      status: 'Observación',
+      treatment_plan: '',
+      notes: '',
+      weight_entry: 0
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEditModal = (h: Hospitalization) => {
+    setEditingHospitalization(h);
+    const patientObj = patients.find(p => p.id === h.patient_id);
+    setSelectedPatient(patientObj || null);
+    setFormData({
+      patient_id: h.patient_id,
+      doctor_id: h.doctor_id,
+      reason: h.reason,
+      diagnosis_preliminary: h.diagnosis_preliminary,
+      alert_message: h.alert_message || '',
+      alert_time: h.alert_time || '',
+      status: h.status,
+      treatment_plan: h.treatment_plan || '',
+      notes: h.notes || '',
+      weight_entry: h.weight_entry || 0
+    });
+    setActiveMenuId(null);
+    setIsModalOpen(true);
+  };
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      if (editingHospitalization) {
+        await hospitalizationService.update(editingHospitalization.id, formData);
+      } else {
+        await hospitalizationService.create({
+          ...formData,
+          entry_date: new Date().toISOString()
+        });
+      }
+      setIsModalOpen(false);
+      loadData();
+    } catch (error) {
+      console.error(error);
+      alert("Error al guardar el internamiento");
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!confirm('¿Desea dar de alta este paciente? Esto eliminará el registro de internamiento activo.')) return;
+    try {
+      await hospitalizationService.delete(id);
+      loadData();
+      setActiveMenuId(null);
+    } catch (error) {
+      console.error(error);
+      alert("Error al dar de alta");
     }
   };
 
@@ -80,6 +199,7 @@ export default function HospitalizationPage() {
                 </button>
             </div>
             <motion.button 
+              onClick={handleOpenAddModal}
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
               className="bg-slate-900 text-white font-black py-3.5 px-8 rounded-2xl transition-all shadow-xl shadow-slate-200 flex items-center gap-2 text-xs uppercase tracking-widest"
@@ -117,9 +237,31 @@ export default function HospitalizationPage() {
                     <div className={`px-4 py-1.5 rounded-full border text-[9px] font-black uppercase tracking-widest ${getStatusStyle(h.status)}`}>
                         {h.status}
                     </div>
-                    <button className="text-slate-300 hover:text-slate-600 transition-colors">
-                        <EllipsisVertical className="size-5" />
-                    </button>
+                    <div className="relative">
+                      <button 
+                        onClick={() => setActiveMenuId(activeMenuId === h.id ? null : h.id)}
+                        className="text-slate-300 hover:text-slate-600 transition-colors"
+                      >
+                          <EllipsisVertical className="size-5" />
+                      </button>
+                      <AnimatePresence>
+                        {activeMenuId === h.id && (
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                            className="absolute right-0 top-8 w-48 bg-white rounded-2xl shadow-2xl border border-slate-100 py-2 z-50 overflow-hidden"
+                          >
+                            <button onClick={() => handleOpenEditModal(h)} className="w-full px-6 py-3 text-left text-xs font-black text-slate-600 hover:bg-slate-50 flex items-center gap-3 transition-colors">
+                              <Edit2 className="size-4 text-primary" /> Editar Registro
+                            </button>
+                            <button onClick={() => handleDelete(h.id)} className="w-full px-6 py-3 text-left text-xs font-black text-red-500 hover:bg-red-50 flex items-center gap-3 transition-colors">
+                              <Trash2 className="size-4" /> Dar de Alta
+                            </button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
                   </div>
 
                   <div className="flex items-center gap-4 mb-6">
@@ -210,10 +352,30 @@ export default function HospitalizationPage() {
                           <span className="text-xs font-black">{h.alert_time}</span>
                         </div>
                       </td>
-                      <td className="px-10 py-6 text-right">
-                        <button className="text-slate-400 hover:text-primary transition-colors">
-                          <CircleCheck className="size-5" />
+                      <td className="px-10 py-6 text-right relative">
+                        <button 
+                          onClick={() => setActiveMenuId(activeMenuId === h.id ? null : h.id)}
+                          className="text-slate-300 hover:text-slate-600 transition-colors"
+                        >
+                          <EllipsisVertical className="size-5 ml-auto" />
                         </button>
+                        <AnimatePresence>
+                          {activeMenuId === h.id && (
+                            <motion.div
+                              initial={{ opacity: 0, scale: 0.9, x: -20 }}
+                              animate={{ opacity: 1, scale: 1, x: 0 }}
+                              exit={{ opacity: 0, scale: 0.9, x: -20 }}
+                              className="absolute right-20 top-4 w-48 bg-white rounded-2xl shadow-2xl border border-slate-100 py-2 z-50 overflow-hidden"
+                            >
+                              <button onClick={() => handleOpenEditModal(h)} className="w-full px-6 py-3 text-left text-xs font-black text-slate-600 hover:bg-slate-50 flex items-center gap-3 transition-colors">
+                                <Edit2 className="size-4 text-primary" /> Editar Registro
+                              </button>
+                              <button onClick={() => handleDelete(h.id)} className="w-full px-6 py-3 text-left text-xs font-black text-red-500 hover:bg-red-50 flex items-center gap-3 transition-colors">
+                                <Trash2 className="size-4" /> Dar de Alta
+                              </button>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </td>
                     </tr>
                   ))}
@@ -224,7 +386,255 @@ export default function HospitalizationPage() {
         </AnimatePresence>
       )}
 
+      <button onClick={() => setActiveMenuId(null)} className={`fixed inset-0 z-40 ${activeMenuId ? 'block' : 'hidden'}`} />
+
+      {/* Modal para Registrar/Editar Ingreso */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsModalOpen(false)} className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" />
+            <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="relative w-full max-w-4xl bg-white rounded-[3.5rem] shadow-premium overflow-hidden">
+               <form onSubmit={handleSave} className="flex flex-col max-h-[90vh]">
+                  {/* Header Modal */}
+                  <div className="bg-slate-900 p-10 pb-12 relative overflow-hidden shrink-0">
+                     <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-[80px] -mr-32 -mt-32" />
+                     <div className="relative z-10">
+                        <h2 className="text-4xl font-black text-white tracking-tighter mb-2">
+                           {editingHospitalization ? 'Editar Internamiento' : 'Registrar Ingreso'}
+                        </h2>
+                        <p className="text-primary font-bold text-xs uppercase tracking-[0.3em]">
+                           {editingHospitalization ? `Modificando registro ID #${editingHospitalization.id}` : 'Monitoreo clínico de paciente activo'}
+                        </p>
+                     </div>
+                     <button 
+                        type="button" 
+                        onClick={(e) => { e.stopPropagation(); setIsModalOpen(false); }} 
+                        className="absolute top-8 right-8 text-white/40 hover:text-white transition-colors z-[60]"
+                     >
+                        <X className="size-8" />
+                     </button>
+                  </div>
+
+                  {/* Body Modal */}
+                  <div className="flex-1 overflow-y-auto p-12 custom-scrollbar space-y-8">
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-2">
+                           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2 block">Paciente</label>
+                           {selectedPatient ? (
+                            <div className="flex items-center justify-between p-4 bg-primary/5 rounded-[2rem] border-2 border-primary/20 shadow-sm">
+                               <div className="flex items-center gap-4">
+                                  <div className="size-12 rounded-2xl bg-primary text-white flex items-center justify-center font-black text-xl">
+                                     {selectedPatient.name[0]}
+                                  </div>
+                                  <div>
+                                     <p className="text-lg font-black text-slate-900 tracking-tight leading-none mb-1 uppercase">{selectedPatient.name}</p>
+                                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{selectedPatient.owner_name}</p>
+                                  </div>
+                               </div>
+                               {!editingHospitalization && (
+                                 <button type="button" onClick={() => {setSelectedPatient(null); setFormData({...formData, patient_id: 0});}} className="size-10 rounded-xl hover:bg-white text-primary flex items-center justify-center transition-colors shadow-sm">
+                                    <X className="size-5" />
+                                 </button>
+                               )}
+                            </div>
+                           ) : (
+                            <div className="relative group">
+                               <Search className="absolute left-7 top-1/2 -translate-y-1/2 text-primary size-5" />
+                               <input 
+                                 className="input-master !pl-20 py-5" 
+                                 placeholder="Buscar paciente por nombre..." 
+                                 value={patientSearch} 
+                                 onChange={e => {setPatientSearch(e.target.value); setShowPatientResults(true);}} 
+                               />
+                               <AnimatePresence>
+                                 {showPatientResults && patientSearch && (
+                                   <motion.div 
+                                     initial={{ opacity: 0, y: 10 }}
+                                     animate={{ opacity: 1, y: 5 }}
+                                     exit={{ opacity: 0, scale: 0.95 }}
+                                     className="absolute z-50 left-0 right-0 top-full bg-white border border-slate-100 rounded-[2.5rem] shadow-premium-dark p-4 overflow-hidden"
+                                   >
+                                      {patients.filter(p => p.name.toLowerCase().includes(patientSearch.toLowerCase())).slice(0, 5).map(p => (
+                                        <button 
+                                          key={p.id} 
+                                          type="button" 
+                                          onClick={() => {
+                                            setSelectedPatient(p); 
+                                            setFormData({...formData, patient_id: p.id});
+                                            setShowPatientResults(false);
+                                          }} 
+                                          className="w-full p-4 text-left hover:bg-slate-50 rounded-3xl flex items-center justify-between group transition-all"
+                                        >
+                                          <div className="flex items-center gap-4">
+                                            <div className="size-10 rounded-xl bg-slate-50 flex items-center justify-center font-black text-slate-400 group-hover:bg-primary/10 group-hover:text-primary transition-colors uppercase">
+                                              {p.name[0]}
+                                            </div>
+                                            <div>
+                                              <p className="text-sm font-black text-slate-900 uppercase tracking-tight group-hover:text-primary">{p.name}</p>
+                                              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{p.owner_name}</p>
+                                            </div>
+                                          </div>
+                                          <div className="size-10 rounded-xl bg-slate-50 flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                                             <ChevronRight className="size-4" />
+                                          </div>
+                                        </button>
+                                      ))}
+                                      {patients.filter(p => p.name.toLowerCase().includes(patientSearch.toLowerCase())).length === 0 && (
+                                        <div className="p-10 text-center text-slate-400 font-bold uppercase text-[10px] tracking-widest">No se encontraron mascotas</div>
+                                      )}
+                                   </motion.div>
+                                 )}
+                               </AnimatePresence>
+                            </div>
+                           )}
+                        </div>
+                        <div className="space-y-2">
+                           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2 block">Médico Responsable</label>
+                           <div className="relative">
+                              <button
+                                type="button"
+                                onClick={() => setIsDoctorDropdownOpen(!isDoctorDropdownOpen)}
+                                className="input-master !pl-20 text-left flex items-center justify-between group"
+                              >
+                                <Stethoscope className="absolute left-7 top-1/2 -translate-y-1/2 text-primary size-5" />
+                                <span className={formData.doctor_id ? 'text-slate-900' : 'text-slate-400 font-bold'}>
+                                  {doctors.find(d => d.id === formData.doctor_id)?.full_name || 'Seleccionar Doctor'}
+                                </span>
+                                <ChevronRight className={`size-4 text-slate-300 transition-transform ${isDoctorDropdownOpen ? 'rotate-90' : ''}`} />
+                              </button>
+
+                              <AnimatePresence>
+                                {isDoctorDropdownOpen && (
+                                  <motion.div
+                                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                                    animate={{ opacity: 1, y: 5, scale: 1 }}
+                                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                                    className="absolute z-[110] w-full left-0 bg-white rounded-[2rem] shadow-premium-dark border border-slate-100 overflow-hidden py-3"
+                                  >
+                                    <div className="max-h-60 overflow-y-auto custom-scrollbar">
+                                      {doctors.map(doctor => (
+                                        <button
+                                          key={doctor.id}
+                                          type="button"
+                                          onClick={() => {
+                                             setFormData({...formData, doctor_id: doctor.id});
+                                             setIsDoctorDropdownOpen(false);
+                                          }}
+                                          className={`w-full px-8 py-4 text-left text-sm transition-all flex items-center gap-4
+                                            ${formData.doctor_id === doctor.id 
+                                              ? 'bg-primary/10 text-primary font-black' 
+                                              : 'text-slate-600 font-bold hover:bg-slate-50 hover:text-primary'}`}
+                                        >
+                                          <div className={`size-8 rounded-xl flex items-center justify-center font-black text-xs
+                                            ${formData.doctor_id === doctor.id ? 'bg-primary text-white' : 'bg-slate-100 text-slate-400'}`}>
+                                            {doctor.full_name[0]}
+                                          </div>
+                                          {doctor.full_name}
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                           </div>
+                        </div>
+                     </div>
+
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-2">
+                           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2 block">Motivo de Ingreso</label>
+                           <div className="relative">
+                              <ClipboardList className="absolute left-7 top-1/2 -translate-y-1/2 text-primary size-5" />
+                              <input 
+                                className="input-master !pl-20" 
+                                value={formData.reason} 
+                                onChange={e => setFormData({...formData, reason: e.target.value})}
+                                required
+                                placeholder="Ej: Vómitos persistentes, Cirugía post-op..."
+                              />
+                           </div>
+                        </div>
+                        <div className="space-y-2">
+                           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2 block">Estado Actual</label>
+                           <select 
+                             className="input-master" 
+                             value={formData.status} 
+                             onChange={e => setFormData({...formData, status: e.target.value as any})}
+                           >
+                              <option value="Observación">Observación</option>
+                              <option value="Estable">Estable</option>
+                              <option value="Crítico">Crítico</option>
+                              <option value="Alta">Alta</option>
+                           </select>
+                        </div>
+                     </div>
+
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-2">
+                           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2 block">Hora de Alerta</label>
+                           <input 
+                             type="time"
+                             className="input-master" 
+                             value={formData.alert_time} 
+                             onChange={e => setFormData({...formData, alert_time: e.target.value})}
+                           />
+                        </div>
+                        <div className="space-y-2">
+                           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2 block">Mensaje de Alerta</label>
+                           <input 
+                             className="input-master" 
+                             value={formData.alert_message} 
+                             onChange={e => setFormData({...formData, alert_message: e.target.value})}
+                             placeholder="Ej: Administrar medicamento vía IV..."
+                           />
+                        </div>
+                     </div>
+
+                     <div className="space-y-2">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2 block">Plan de Tratamiento</label>
+                        <textarea 
+                           className="input-master h-28 pt-4" 
+                           placeholder="Describa el protocolo médico a seguir..." 
+                           value={formData.treatment_plan} 
+                           onChange={e => setFormData({...formData, treatment_plan: e.target.value})} 
+                        />
+                     </div>
+                  </div>
+
+                  {/* Footer Modal */}
+                  <div className="p-10 border-t border-slate-50 flex gap-4 shrink-0">
+                     <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-5 rounded-[1.5rem] font-black uppercase text-[10px] text-slate-400 hover:bg-slate-50 transition-colors">Cancelar</button>
+                     <button type="submit" className="flex-[2] py-5 bg-slate-900 text-white rounded-[1.5rem] font-black uppercase text-[11px] tracking-[0.2em] shadow-2xl shadow-slate-200 hover:bg-primary transition-all">
+                        {editingHospitalization ? 'Actualizar Internamiento' : 'Confirmar Ingreso'}
+                     </button>
+                  </div>
+               </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       <style>{`
+        .input-master { 
+          width: 100%; 
+          background-color: #ffffff; 
+          border: 2px solid #f1f5f9; 
+          border-radius: 1.5rem; 
+          padding: 1rem 1.5rem; 
+          font-size: 0.9rem; 
+          font-weight: 700; 
+          color: #1e293b; 
+          outline: none; 
+          transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1); 
+        }
+        .input-master:focus { 
+          border-color: #06b6d4; 
+          background-color: #fff; 
+          box-shadow: 0 10px 30px -10px rgba(6,182,212,0.2);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
         @keyframes pulse-slow {
           0%, 100% { opacity: 1; transform: scale(1); }
           50% { opacity: 0.7; transform: scale(0.98); }
@@ -234,6 +644,9 @@ export default function HospitalizationPage() {
         }
         .animate-spin-slow {
           animation: spin 3s linear infinite;
+        }
+        .shadow-premium-dark {
+          box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.15);
         }
       `}</style>
     </div>

@@ -52,6 +52,7 @@ export default function Sidebar({ onLogout, agendaCounter }: SidebarProps) {
         <p className="px-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 opacity-70">Administración</p>
         
         <SidebarLink to="/inventory" icon={Box} label="Gestión de Insumos" active={path === '/inventory'} />
+        <SidebarLink to="/schedule-config" icon={CalendarDays} label="Gestión de Agenda" active={path === '/schedule-config'} />
         <SidebarLink to="/users" icon={Users2} label="Gestión de Usuarios" active={path === '/users'} />
         <SidebarLink to="/settings" icon={Settings} label="Configuración" active={path === '/settings'} />
       </nav>

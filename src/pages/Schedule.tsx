@@ -3,13 +3,15 @@ import { motion, AnimatePresence } from 'motion/react';
 import { appointmentService, Appointment } from '../services/appointmentService';
 import { patientService, Patient } from '../services/patientService';
 import { userService, User } from '../services/userService';
+import { X, Search, User as UserIcon, Stethoscope, ChevronRight, ClipboardList } from 'lucide-react';
+import { configService, AppointmentTypeConfig } from '../services/configService';
 
 interface ScheduleProps {
   appointments: Appointment[];
   refreshAppointments: () => void;
 }
 
-const APPOINTMENT_TYPES = {
+const APPOINTMENT_TYPES_FALLBACK: any = {
   Consulta: { duration: 30, color: 'bg-primary', icon: 'stethoscope' },
   Vacuna: { duration: 20, color: 'bg-emerald-500', icon: 'vaccines' },
   Cirugía: { duration: 120, color: 'bg-secondary', icon: 'precision_manufacturing' },
@@ -21,6 +23,8 @@ export default function Schedule({ appointments, refreshAppointments }: Schedule
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAppointment, setEditingAppointment] = useState<Appointment | null>(null);
+  const [appointmentTypes, setAppointmentTypes] = useState<Record<string, AppointmentTypeConfig>>({});
+  const [typeList, setTypeList] = useState<AppointmentTypeConfig[]>([]);
 
   // Entities for Search
   const [patients, setPatients] = useState<Patient[]>([]);
@@ -38,9 +42,12 @@ export default function Schedule({ appointments, refreshAppointments }: Schedule
   const [showPatientResults, setShowPatientResults] = useState(false);
   const [showDoctorResults, setShowDoctorResults] = useState(false);
   const [showAssistantResults, setShowAssistantResults] = useState(false);
+  
+  const [isDoctorDropdownOpen, setIsDoctorDropdownOpen] = useState(false);
+  const [isAssistantDropdownOpen, setIsAssistantDropdownOpen] = useState(false);
 
   const [formData, setFormData] = useState({
-    type: 'Consulta' as keyof typeof APPOINTMENT_TYPES,
+    type: 'Consulta' as string,
     time: '09:00',
     date: new Date().toISOString().split('T')[0],
     duration: 30
@@ -57,6 +64,12 @@ export default function Schedule({ appointments, refreshAppointments }: Schedule
     ]);
     setPatients(pSub);
     setUsers(uSub);
+    
+    // Cargar tipos de cita
+    const types = configService.getAppointmentTypes();
+    setTypeList(types);
+    const typesMap = types.reduce((acc, curr) => ({ ...acc, [curr.id]: curr }), {});
+    setAppointmentTypes(typesMap);
   };
 
   const handleOpenModal = (app: Appointment | null = null) => {
@@ -223,30 +236,62 @@ export default function Schedule({ appointments, refreshAppointments }: Schedule
             <div className="flex min-h-full relative">
               <div className="w-20 shrink-0 bg-white border-r border-slate-200">
                 {timeSlots.map(hour => (
-                  <div key={hour} className="h-24 px-3 py-2 text-right">
-                    <span className="text-[10px] font-black text-slate-300 font-mono">{hour.toString().padStart(2, '0')}:00</span>
-                  </div>
+                  <React.Fragment key={hour}>
+                    <div className="h-24 px-3 py-2 text-right relative">
+                      <span className="text-[10px] font-black text-slate-400 font-mono">{hour.toString().padStart(2, '0')}:00</span>
+                      {/* Interval marker for :30 */}
+                      <div className="absolute top-12 right-3 -translate-y-1/2">
+                        <span className="text-[8px] font-bold text-slate-200 font-mono">{hour.toString().padStart(2, '0')}:30</span>
+                      </div>
+                    </div>
+                  </React.Fragment>
                 ))}
               </div>
 
               <div className="flex-1 flex relative">
                 {daysToShow.map((day) => (
                   <div key={day.toISOString()} className="flex-1 border-r border-slate-100 last:border-0 relative">
-                    {timeSlots.map(hour => <div key={hour} className="h-24 border-b border-slate-50 border-dashed"></div>)}
+                    {timeSlots.map(hour => (
+                      <div key={hour} className="h-24 border-b border-slate-100 relative">
+                        {/* 30 min helper line */}
+                        <div className="absolute top-12 left-0 right-0 border-t border-slate-50 border-dashed"></div>
+                      </div>
+                    ))}
                     {appointments.filter(app => new Date(app.start_time).toDateString() === day.toDateString()).map(app => {
                         const appStart = new Date(app.start_time);
+                        const calculatedHeight = (app.duration_minutes * 96 / 60) - 4;
+                        const minHeight = 45;
+                        const isShort = app.duration_minutes <= 25;
+
                         return (
                           <motion.div key={app.id} 
                             onClick={() => handleOpenModal(app)}
-                            initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-                            style={{ top: (appStart.getHours() * 96) + (appStart.getMinutes() * 96 / 60) + 4, height: (app.duration_minutes * 96 / 60) - 8 }}
-                            className={`absolute left-2 right-2 rounded-xl p-3 shadow-lg border-l-4 overflow-hidden z-10 cursor-pointer hover:brightness-110 hover:scale-[1.01] transition-all ${APPOINTMENT_TYPES[app.type].color} text-white`}>
-                            <div className="flex justify-between items-start gap-1 mb-1">
-                              <span className="text-[8px] font-black uppercase tracking-widest opacity-80 truncate">{app.type}</span>
-                              <span className="material-symbols-outlined text-[12px]">{APPOINTMENT_TYPES[app.type].icon}</span>
+                            initial={{ opacity: 0, scale: 0.95 }} 
+                            animate={{ opacity: 1, scale: 1 }}
+                            style={{ 
+                              top: (appStart.getHours() * 96) + (appStart.getMinutes() * 96 / 60) + 2, 
+                              height: Math.max(calculatedHeight, minHeight) 
+                            }}
+                            className={`absolute left-1.5 right-1.5 rounded-2xl shadow-lg border-l-[6px] overflow-hidden z-10 cursor-pointer hover:brightness-110 hover:scale-[1.02] active:scale-[0.98] transition-all ${appointmentTypes[app.type]?.color || APPOINTMENT_TYPES_FALLBACK[app.type]?.color || 'bg-primary'} text-white flex flex-col justify-start group
+                              ${isShort ? 'p-2' : 'p-3'}`}
+                          >
+                            {/* Glass effect shine */}
+                            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            
+                            <div className="flex justify-between items-start gap-1 mb-0.5 relative z-10">
+                              <span className="text-[7.5px] font-black uppercase tracking-[0.15em] opacity-90 truncate">{app.type}</span>
+                              <span className="material-symbols-outlined text-[14px] opacity-40 group-hover:opacity-100 transition-opacity">{appointmentTypes[app.type]?.icon || APPOINTMENT_TYPES_FALLBACK[app.type]?.icon || 'event'}</span>
                             </div>
-                            <h4 className="text-[10px] font-black truncate uppercase leading-tight">{app.patient_name}</h4>
-                            <p className="text-[8px] font-bold opacity-70 truncate uppercase">{app.doctor_name}</p>
+                            
+                            <h4 className={`font-black uppercase leading-tight relative z-10 truncate ${isShort ? 'text-[9px]' : 'text-[11px] mb-0.5'}`}>
+                              {app.patient_name}
+                            </h4>
+                            
+                            {!isShort && (
+                              <p className="text-[8.5px] font-bold opacity-75 truncate uppercase relative z-10 border-t border-white/10 pt-1 mt-1">
+                                {app.doctor_name}
+                              </p>
+                            )}
                           </motion.div>
                         );
                     })}
@@ -274,7 +319,7 @@ export default function Schedule({ appointments, refreshAppointments }: Schedule
                     return (
                       <div key={app.id} 
                         onClick={() => handleOpenModal(app)}
-                        className={`${APPOINTMENT_TYPES[app.type].color} text-[7px] text-white p-1 rounded font-black uppercase truncate cursor-pointer hover:brightness-110`}>
+                        className={`${appointmentTypes[app.type]?.color || APPOINTMENT_TYPES_FALLBACK[app.type]?.color || 'bg-primary'} text-[7px] text-white p-1 rounded font-black uppercase truncate cursor-pointer hover:brightness-110`}>
                         {d.getHours()}:{d.getMinutes().toString().padStart(2, '0')} {app.patient_name}
                       </div>
                     );
@@ -293,39 +338,88 @@ export default function Schedule({ appointments, refreshAppointments }: Schedule
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsModalOpen(false)} className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" />
             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="relative w-full max-w-xl bg-white rounded-[2.5rem] p-10 shadow-premium overflow-visible">
               <form onSubmit={handleSaveAppointment} className="space-y-6">
-                <div className="flex justify-between items-start">
+                <div className="flex justify-between items-start relative">
                   <div>
                     <h2 className="text-3xl font-black text-slate-900 tracking-tight">{editingAppointment ? 'Editar Cita' : 'Agendar Cita'}</h2>
                     <p className="text-slate-500 font-medium">Sincronizado con Turso Cloud DB.</p>
                   </div>
-                  {editingAppointment && (
-                    <button type="button" onClick={handleDelete} className="size-12 rounded-2xl bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center group">
-                      <span className="material-symbols-outlined group-hover:scale-110 transition-transform">delete</span>
+                  <div className="flex items-center gap-2">
+                    {editingAppointment && (
+                      <button type="button" onClick={handleDelete} className="size-10 rounded-xl bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center group">
+                        <span className="material-symbols-outlined group-hover:scale-110 transition-transform text-sm">delete</span>
+                      </button>
+                    )}
+                    <button 
+                      type="button" 
+                      onClick={() => setIsModalOpen(false)} 
+                      className="size-10 rounded-xl bg-slate-50 text-slate-300 hover:text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-all shadow-sm"
+                    >
+                      <X className="size-4" />
                     </button>
-                  )}
+                  </div>
                 </div>
 
                 {/* BUSCADOR DE PACIENTE */}
                 <div className="relative">
                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1 block text-left mb-1">Paciente</label>
-                   {selectedPatient ? (
-                     <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
-                        <span className="text-sm font-black text-slate-900 uppercase tracking-tight">{selectedPatient.name}</span>
-                        <button type="button" onClick={() => setSelectedPatient(null)} className="material-symbols-outlined text-slate-400">close</button>
-                     </div>
-                   ) : (
-                     <div className="relative group">
-                        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors text-sm">search</span>
-                        <input className="input-medical pl-10" placeholder="Buscar por nombre..." value={patientSearch} onChange={e => {setPatientSearch(e.target.value); setShowPatientResults(true);}} />
-                        {showPatientResults && patientSearch && (
-                          <div className="absolute z-50 left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden">
-                             {patients.filter(p => p.name.toLowerCase().includes(patientSearch.toLowerCase())).slice(0, 5).map(p => (
-                               <button key={p.id} type="button" onClick={() => {setSelectedPatient(p); setShowPatientResults(false);}} className="w-full p-3 text-left hover:bg-slate-50 text-xs font-bold text-slate-700 uppercase tracking-tight">{p.name} - {p.owner_name}</button>
-                             ))}
-                          </div>
-                        )}
-                     </div>
-                   )}
+                    {selectedPatient ? (
+                      <div className="flex items-center justify-between p-4 bg-primary/5 rounded-2xl border-2 border-primary/20 shadow-sm">
+                         <div className="flex items-center gap-4">
+                            <div className="size-10 rounded-xl bg-primary text-white flex items-center justify-center font-black">
+                               {selectedPatient.name[0]}
+                            </div>
+                            <div>
+                               <p className="text-sm font-black text-slate-900 uppercase tracking-tight leading-none mb-1">{selectedPatient.name}</p>
+                               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{selectedPatient.owner_name}</p>
+                            </div>
+                         </div>
+                         <button type="button" onClick={() => setSelectedPatient(null)} className="size-8 rounded-lg hover:bg-white text-primary flex items-center justify-center transition-colors shadow-sm">
+                            <X className="size-4" />
+                         </button>
+                      </div>
+                    ) : (
+                      <div className="relative group">
+                         <div className="absolute left-6 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none">
+                            <Search className="text-primary size-5 opacity-50 group-focus-within:opacity-100 transition-opacity" />
+                         </div>
+                         <input 
+                           className="input-medical !pl-16 py-5 !bg-slate-50/50" 
+                           placeholder="Buscar por nombre del paciente..." 
+                           value={patientSearch} 
+                           onChange={e => {setPatientSearch(e.target.value); setShowPatientResults(true);}} 
+                         />
+                         <AnimatePresence>
+                           {showPatientResults && patientSearch && (
+                             <motion.div 
+                               initial={{ opacity: 0, y: 10 }}
+                               animate={{ opacity: 1, y: 5 }}
+                               exit={{ opacity: 0, scale: 0.95 }}
+                               className="absolute z-50 left-0 right-0 top-full bg-white border border-slate-100 rounded-[2rem] shadow-premium-dark p-3 overflow-hidden"
+                             >
+                                {patients.filter(p => p.name.toLowerCase().includes(patientSearch.toLowerCase())).slice(0, 5).map(p => (
+                                  <button 
+                                    key={p.id} 
+                                    type="button" 
+                                    onClick={() => {setSelectedPatient(p); setShowPatientResults(false);}} 
+                                    className="w-full p-4 text-left hover:bg-slate-50 rounded-2xl flex items-center justify-between group transition-all"
+                                  >
+                                    <div>
+                                      <p className="text-xs font-black text-slate-900 uppercase tracking-tight group-hover:text-primary">{p.name}</p>
+                                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{p.owner_name}</p>
+                                    </div>
+                                    <div className="size-8 rounded-lg bg-slate-50 flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                                       <ChevronRight className="size-4" />
+                                    </div>
+                                  </button>
+                                ))}
+                                {patients.filter(p => p.name.toLowerCase().includes(patientSearch.toLowerCase())).length === 0 && (
+                                  <div className="p-8 text-center text-slate-400 font-bold uppercase text-[9px] tracking-widest">Sin resultados</div>
+                                )}
+                             </motion.div>
+                           )}
+                         </AnimatePresence>
+                      </div>
+                    )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -342,35 +436,135 @@ export default function Schedule({ appointments, refreshAppointments }: Schedule
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Tipo de Servicio</label>
                   <div className="grid grid-cols-2 gap-2">
-                    {Object.keys(APPOINTMENT_TYPES).map(t => (
-                      <button key={t} type="button" onClick={() => setFormData({...formData, type: t as any, duration: APPOINTMENT_TYPES[t as keyof typeof APPOINTMENT_TYPES].duration})}
-                        className={`flex items-center gap-3 p-3 rounded-xl border-2 transition-all ${formData.type === t ? 'border-primary bg-primary/5 text-primary' : 'border-slate-50 text-slate-400'}`}>
-                        <span className="material-symbols-outlined text-sm">{APPOINTMENT_TYPES[t as keyof typeof APPOINTMENT_TYPES].icon}</span>
+                    {typeList.map(type => (
+                      <button 
+                        key={type.id} 
+                        type="button" 
+                        onClick={() => setFormData({...formData, type: type.id as any, duration: type.duration})}
+                        className={`flex items-center gap-3 p-3 rounded-xl border-2 transition-all ${formData.type === type.id ? 'border-primary bg-primary/5 text-primary' : 'border-slate-50 text-slate-400'}`}
+                      >
+                        <span className="material-symbols-outlined text-sm">{type.icon}</span>
                         <div className="text-left">
-                          <p className="text-[9px] font-black uppercase tracking-widest leading-none">{t}</p>
+                          <p className="text-[9px] font-black uppercase tracking-widest leading-none">{type.label}</p>
+                          <p className="text-[7px] font-bold opacity-60 uppercase">{type.duration} min</p>
                         </div>
                       </button>
                     ))}
                   </div>
                 </div>
 
-                {/* DOCTOR Y ASISTENTE */}
-                <div className="grid grid-cols-2 gap-4">
-                   <div className="relative">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1 block text-left mb-1">Doctor Especialista</label>
-                      <select className="input-medical" value={selectedDoctor?.id || 0} onChange={e => setSelectedDoctor(users.find(u => u.id === Number(e.target.value)) || null)}>
-                        <option value={0}>Seleccionar...</option>
-                        {users.filter(u => u.role === 'Doctor').map(u => <option key={u.id} value={u.id}>{u.full_name}</option>)}
-                      </select>
-                   </div>
-                   <div className="relative">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1 block text-left mb-1">Asistente</label>
-                      <select className="input-medical" value={selectedAssistant?.id || 0} onChange={e => setSelectedAssistant(users.find(u => u.id === Number(e.target.value)) || null)}>
-                        <option value={0}>Ninguno</option>
-                        {users.filter(u => u.role === 'Asistente').map(u => <option key={u.id} value={u.id}>{u.full_name}</option>)}
-                      </select>
-                   </div>
-                </div>
+                 <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1 relative doctor-dropdown-container">
+                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1 block text-left mb-1">Doctor Especialista</label>
+                       <button
+                         type="button"
+                         onClick={() => setIsDoctorDropdownOpen(!isDoctorDropdownOpen)}
+                         className="input-medical !py-4 flex items-center justify-between px-4 group !pl-12 relative"
+                       >
+                         <Stethoscope className="absolute left-4 top-1/2 -translate-y-1/2 text-primary size-4" />
+                         <span className={selectedDoctor ? 'text-slate-900' : 'text-slate-400'}>
+                           {selectedDoctor?.full_name || 'Seleccionar Dr.'}
+                         </span>
+                         <ChevronRight className={`size-3 text-slate-300 transition-transform ${isDoctorDropdownOpen ? 'rotate-90' : ''}`} />
+                       </button>
+
+                       <AnimatePresence>
+                         {isDoctorDropdownOpen && (
+                           <motion.div
+                             initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                             animate={{ opacity: 1, y: 5, scale: 1 }}
+                             exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                             className="absolute z-[110] w-full left-0 bg-white rounded-2xl shadow-premium border border-slate-100 overflow-hidden py-2"
+                           >
+                             <div className="max-h-48 overflow-y-auto custom-scrollbar">
+                               {users.filter(u => u.role === 'Doctor').map(doctor => (
+                                 <button
+                                   key={doctor.id}
+                                   type="button"
+                                   onClick={() => {
+                                      setSelectedDoctor(doctor);
+                                      setIsDoctorDropdownOpen(false);
+                                   }}
+                                   className={`w-full px-4 py-3 text-left text-[11px] transition-all flex items-center gap-3
+                                     ${selectedDoctor?.id === doctor.id 
+                                       ? 'bg-primary/10 text-primary font-black' 
+                                       : 'text-slate-600 font-bold hover:bg-slate-50 hover:text-primary'}`}
+                                 >
+                                   <div className={`size-6 rounded-lg flex items-center justify-center font-black text-[9px]
+                                     ${selectedDoctor?.id === doctor.id ? 'bg-primary text-white' : 'bg-slate-100 text-slate-400'}`}>
+                                     {doctor.full_name[0]}
+                                   </div>
+                                   {doctor.full_name}
+                                 </button>
+                               ))}
+                             </div>
+                           </motion.div>
+                         )}
+                       </AnimatePresence>
+                    </div>
+
+                    <div className="space-y-1 relative assistant-dropdown-container">
+                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1 block text-left mb-1">Asistente</label>
+                       <button
+                         type="button"
+                         onClick={() => setIsAssistantDropdownOpen(!isAssistantDropdownOpen)}
+                         className="input-medical !py-4 flex items-center justify-between px-4 group !pl-12 relative"
+                       >
+                         <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-primary size-4" />
+                         <span className={selectedAssistant ? 'text-slate-900' : 'text-slate-400'}>
+                           {selectedAssistant?.full_name || 'Seleccionar...'}
+                         </span>
+                         <ChevronRight className={`size-3 text-slate-300 transition-transform ${isAssistantDropdownOpen ? 'rotate-90' : ''}`} />
+                       </button>
+
+                       <AnimatePresence>
+                         {isAssistantDropdownOpen && (
+                           <motion.div
+                             initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                             animate={{ opacity: 1, y: 5, scale: 1 }}
+                             exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                             className="absolute z-[110] w-full left-0 bg-white rounded-2xl shadow-premium border border-slate-100 overflow-hidden py-2"
+                           >
+                             <div className="max-h-48 overflow-y-auto custom-scrollbar">
+                               <button
+                                 type="button"
+                                 onClick={() => {
+                                    setSelectedAssistant(null);
+                                    setIsAssistantDropdownOpen(false);
+                                 }}
+                                 className="w-full px-4 py-3 text-left text-[11px] text-slate-400 font-bold hover:bg-slate-50 transition-all flex items-center gap-3"
+                               >
+                                 <div className="size-6 rounded-lg bg-slate-50 flex items-center justify-center font-black text-[9px]">
+                                   <X className="size-3" />
+                                 </div>
+                                 Ninguno
+                               </button>
+                               {users.filter(u => u.role === 'Asistente').map(asst => (
+                                 <button
+                                   key={asst.id}
+                                   type="button"
+                                   onClick={() => {
+                                      setSelectedAssistant(asst);
+                                      setIsAssistantDropdownOpen(false);
+                                   }}
+                                   className={`w-full px-4 py-3 text-left text-[11px] transition-all flex items-center gap-3
+                                     ${selectedAssistant?.id === asst.id 
+                                       ? 'bg-primary/10 text-primary font-black' 
+                                       : 'text-slate-600 font-bold hover:bg-slate-50 hover:text-primary'}`}
+                                 >
+                                   <div className={`size-6 rounded-lg flex items-center justify-center font-black text-[9px]
+                                     ${selectedAssistant?.id === asst.id ? 'bg-primary text-white' : 'bg-slate-100 text-slate-400'}`}>
+                                     {asst.full_name[0]}
+                                   </div>
+                                   {asst.full_name}
+                                 </button>
+                               ))}
+                             </div>
+                           </motion.div>
+                         )}
+                       </AnimatePresence>
+                    </div>
+                 </div>
 
                 <div className="flex gap-4 pt-4">
                   <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-4.5 rounded-2xl font-black uppercase tracking-widest text-[10px] text-slate-400 hover:bg-slate-50 transition-all">Cancelar</button>

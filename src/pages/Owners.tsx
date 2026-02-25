@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ownerService, Owner } from '../services/ownerService';
+import { X } from 'lucide-react';
 
 export default function Owners() {
   const [owners, setOwners] = useState<Owner[]>([]);
@@ -130,7 +131,16 @@ export default function Owners() {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsModalOpen(false)} className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" />
             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="relative w-full max-w-xl bg-white rounded-[2.5rem] p-10 shadow-premium">
               <form onSubmit={handleSave} className="space-y-6">
-                <h2 className="text-3xl font-black text-slate-900 tracking-tight">Nuevo Propietario</h2>
+                <div className="relative mb-6">
+                  <h2 className="text-3xl font-black text-slate-900 tracking-tight">Nuevo Propietario</h2>
+                  <button 
+                    type="button" 
+                    onClick={() => setIsModalOpen(false)} 
+                    className="absolute -top-2 -right-2 size-8 rounded-full bg-slate-50 text-slate-300 hover:text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-all shadow-sm"
+                  >
+                    <X className="size-4" />
+                  </button>
+                </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1 block text-left">Cédula / ID</label>

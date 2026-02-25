@@ -283,11 +283,18 @@ export default function Patients() {
               className="relative w-full max-w-xl bg-white rounded-[3.5rem] p-12 shadow-2xl overflow-visible"
             >
               <form onSubmit={handleSave} className="space-y-8">
-                <div>
+                <div className="relative mb-8">
                   <h2 className="text-4xl font-black text-slate-900 tracking-tighter mb-2 leading-none">
                     {editingPatient ? 'Editar Paciente' : 'Nuevo Paciente'}
                   </h2>
                   <p className="text-slate-500 font-semibold text-sm">Gestiona la identidad clínica de la mascota.</p>
+                  <button 
+                    type="button" 
+                    onClick={() => setIsModalOpen(false)} 
+                    className="absolute -top-4 -right-4 size-10 rounded-full bg-slate-50 text-slate-300 hover:text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-all shadow-sm"
+                  >
+                    <X className="size-5" />
+                  </button>
                 </div>
 
                 <div className="space-y-3 relative" ref={ownerInputRef}>
